@@ -18,7 +18,7 @@ COPY . /app
 RUN CGO_ENABLED=0 GOOS=linux go build -o /go-app 
 
 # This stage will be our final image to be used on the cluster - With a multi-stage build approach we reduce the number of layers and the final image size
-FROM alpine:edge
+FROM scratch
 
 WORKDIR /app
 COPY --from=build_base /go-app .
