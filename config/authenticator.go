@@ -10,6 +10,12 @@ import (
 
 func TokenAuthMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+
+		if ctx.Request.RequestURI == "/auth/token" {
+			ctx.Next()
+			return
+		}
+
 		tokenHeader := ctx.Request.Header["Authorization"]
 
 		if len(tokenHeader) == 0 {

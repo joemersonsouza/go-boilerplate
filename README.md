@@ -3,10 +3,10 @@
 
 # Build docker image
 
-`docker build -t notification:latest .`
+`docker build -t go-app:latest --build-arg GO_VERSION=1.22.1 .`
 
 # Run docker image
-`docker run -p 8080:8080 notification:latest`
+`docker run -p 8080:8080 go-app:latest`
 
 # Helpful commands
 
