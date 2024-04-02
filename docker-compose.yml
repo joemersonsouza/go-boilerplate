@@ -10,19 +10,21 @@ services:
     command: go run main.go
     depends_on:
       - postgresdb
-    links:
-      - postgresdb
-      
+
   postgresdb:
     image: postgres:alpine
     environment:
       - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_HOST=${DB_HOST}
+      - POSTGRES_PORT=${DB_PORT}  
     ports:
-      - "15432:5432"
+      - "5432:5432"
     volumes:
       - postgres-db:/var/lib/postgresql/data
+    networks:
+      - internal
 
 volumes:
   postgres-db:

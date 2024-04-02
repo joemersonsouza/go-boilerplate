@@ -22,13 +22,7 @@ FROM scratch
 
 WORKDIR /app
 COPY --from=build_base /app/go-app .
-
-# Define our env vars to be used by the app while running
-ENV DB_HOST=localhost
-ENV DB_PORT=5432
-ENV DB_USER=admin
-ENV DB_NAME=notificationdb
-ENV DB_PASSWORD=admin
+COPY --from=build_base /app/.env .
 
 # Optional:
 # To bind to a TCP port, runtime parameters must be supplied to the docker command.

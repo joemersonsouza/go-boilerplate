@@ -30,9 +30,12 @@ func ConnectDatabase() {
 	psqlSetup := fmt.Sprintf("host=%s port=%d user=%s dbname=%s password=%s sslmode=disable",
 		host, port, user, dbname, pass)
 
+	fmt.Println(psqlSetup)
+
 	db, errSql := sql.Open("postgres", psqlSetup)
-	if errSql != nil {
-		fmt.Println("There is an error while connecting to the database ", err)
+	errConn := db.Ping()
+	if errSql != nil || errConn != nil {
+		fmt.Println("There is an error while connecting to the database ", err, errSql, errConn)
 		panic(err)
 	} else {
 		Db = db
