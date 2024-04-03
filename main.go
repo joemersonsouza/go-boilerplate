@@ -1,32 +1,16 @@
 package main
 
 import (
-	"embed"
+	"log"
 	"main/config"
-	"main/controllers"
-
-	"github.com/gin-gonic/gin"
+	"main/server"
 )
 
-//go:embed migrations/*.sql
-var embedMigrations embed.FS
-
 func main() {
-	// gin.SetMode(gin.ReleaseMode) //optional to not get warning
-	// route.SetTrustedProxies([]string{"192.168.1.2"}) //to trust only a specific value
-	route := gin.Default()
-	route.Use(config.TokenAuthMiddleware())
-
-	config.RunMigration(embedMigrations)
-
-	controllers.NotificationController(route)
-	controllers.HealthController(route)
-	controllers.AuthenticationController(route)
-
-	err := route.Run(":8080")
+	container := config.Inject()
+	err := container.Invoke(server.StartServer)
 
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
-
 }

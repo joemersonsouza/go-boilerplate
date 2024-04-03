@@ -10,15 +10,36 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/jrivets/log4g"
+	"go.uber.org/dig"
 )
+
+type IAuthenticationService interface {
+	CreateToken(ctx *gin.Context)
+	ValidateToken(tokenString string) bool
+}
+
+type AuthenticationService struct {
+	companyRepository repository.ICompanyRepository
+}
+
+type AuthenticationServiceDependencies struct {
+	dig.In
+	CompanyRepository repository.ICompanyRepository `name:"CompanyRepository"`
+}
+
+func AuthenticationServiceInstance(deps AuthenticationServiceDependencies) *AuthenticationService {
+	return &AuthenticationService{
+		companyRepository: deps.CompanyRepository,
+	}
+}
 
 var secretKey = []byte("secret-key")
 
-func CreateToken(ctx *gin.Context) {
+func (instance *AuthenticationService) CreateToken(ctx *gin.Context) {
 	logger := log4g.GetLogger(util.LoggerName)
 	apiKey := ctx.Request.Header["Api-Key"][0]
 
-	company := repository.GetCompany(apiKey)
+	company := instance.companyRepository.GetCompany(apiKey)
 
 	if len(company.ApiKey) == 0 {
 		logger.Error(fmt.Sprintf("Login attempt with wrong api key %s", apiKey))
@@ -42,7 +63,7 @@ func CreateToken(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"token": tokenString})
 }
 
-func ValidateToken(tokenString string) bool {
+func (instance *AuthenticationService) ValidateToken(tokenString string) bool {
 	logger := log4g.GetLogger(util.LoggerName)
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return secretKey, nil

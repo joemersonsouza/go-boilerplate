@@ -1,12 +1,33 @@
 package repository
 
+import "go.uber.org/dig"
+
+type ICompanyRepository interface {
+	GetCompany(apiKey string) CompanyObject
+}
+
+type CompanyRepository struct {
+	database IDatabase
+}
+
+type CompanyRepositoryDependencies struct {
+	dig.In
+	Database IDatabase `name:"Database"`
+}
+
 type CompanyObject struct {
 	Id     string
 	ApiKey string
 }
 
-func GetCompany(apiKey string) CompanyObject {
-	ConnectDatabase()
+func CompanyRepositoryInstance(deps CompanyRepositoryDependencies) *CompanyRepository {
+	return &CompanyRepository{
+		database: deps.Database,
+	}
+}
+
+func (instance *CompanyRepository) GetCompany(apiKey string) CompanyObject {
+	Db := instance.database.ConnectDatabase()
 	var company CompanyObject
 
 	rows, err := Db.Query("select * from company where api_key = $1", apiKey)
