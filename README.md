@@ -15,13 +15,14 @@ This boilerplate is a starting point for building RESTful APIs in Go using Postg
 - Getting Started
 
 ## Run tests
+For the proposal of this project, I'm not creating many tests, but you have one that can use as example.
 `go test -v ./tests`
 
 ## Compose a docker file
 `docker compose up`
 
 ## Build docker image
-
+This project was made using GO 1.22.1
 `docker build -t go-app:latest --build-arg GO_VERSION=1.22.1 .`
 
 ## Run docker image
